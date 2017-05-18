@@ -47,10 +47,9 @@ def getCSVFiles() :
 def getValueFromRow(row, header, columnWithVals) :
 
     for column in header :
-        if row[0].strip() == column.strip() :
-            if len(row[1].strip()) != 0 :
-                columnWithVals[column.strip()] = row[1].strip();
-                return row[1].strip()
+        if row[0].strip() == column.strip() and len(row[1].strip()) != 0 :
+            columnWithVals[column.strip()] = row[1].strip();
+            return row[1].strip()
 
     return None
 
@@ -81,7 +80,7 @@ def dealCSVFile(inputFile, output, outputHeader) :
 '''
 主线程处理函数
 '''
-def main(argv=None):
+def main(argv=None) :
 
     # get all csv file
     csvFiles = getCSVFiles()
@@ -108,5 +107,5 @@ def main(argv=None):
     csv_output.flush()
     csv_output.close()
 
-if __name__ == "__main__":
+if __name__ == "__main__" :
     sys.exit(main())
