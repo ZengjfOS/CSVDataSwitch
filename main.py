@@ -18,17 +18,6 @@ import configparser
 from os import walk
 
 '''
-获取配置文件中的配置
-'''
-def getConfigureHeader(configureFile) :
-
-    config = configparser.ConfigParser()
-    config.sections()
-    config.read(configureFile)
-
-    return config.sections()
-
-'''
 获取所有需要处理csv文件
 '''
 def getCSVFiles() :
@@ -44,19 +33,27 @@ def getCSVFiles() :
 '''
 检查当前行里是否有需要的列值
 '''
-def getValueFromRow(row, header, columnWithVals) :
+def getValueFromRow(row, header, columnWithVals, config) :
 
     for column in header :
-        if row[0].strip() == column.strip() and len(row[1].strip()) != 0 :
-            columnWithVals[column.strip()] = row[1].strip();
-            return row[1].strip()
+        valueColumn = config[column]["valueColumn"]
+        columnIndex = 0
+
+        if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 2 :
+            columnIndex = 1
+        else :
+            columnIndex = int(valueColumn) - 1
+
+        if row[0].strip() == column.strip() and len(row[columnIndex].strip()) != 0 :
+            columnWithVals[column.strip()] = row[columnIndex].strip()
+            return row[columnIndex].strip()
 
     return None
 
 '''
 获取当前文件中所有的row，对每行数据进行对比，见最后输出的结果输出到output.csv文件中
 '''
-def dealCSVFile(inputFile, output, outputHeader) :
+def dealCSVFile(inputFile, output, outputHeader, config) :
 
     outputRow = []
     columnWithVals = {}
@@ -68,7 +65,7 @@ def dealCSVFile(inputFile, output, outputHeader) :
         if (len(row) >= 2) :
 
             # get values in dict
-            getValueFromRow(row, outputHeader, columnWithVals)
+            getValueFromRow(row, outputHeader, columnWithVals, config)
 
     # order all vaule by outputHeader order
     for column in outputHeader :
@@ -90,7 +87,10 @@ def main(argv=None) :
     outputCSVWriter = csv.writer(csv_output, delimiter=',', lineterminator='\n')
 
     # get output csv header from config.ini file
-    outputHeader = getConfigureHeader("config.ini")
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    outputHeader = config.sections()
     if (outputHeader == None) :
         return
     outputCSVWriter.writerow(outputHeader)
@@ -99,7 +99,7 @@ def main(argv=None) :
         csv_input = open("input/" + inputFile)
         inputCSVReader = csv.reader(csv_input)
 
-        dealCSVFile(inputCSVReader, outputCSVWriter, outputHeader)
+        dealCSVFile(inputCSVReader, outputCSVWriter, outputHeader, config)
 
         csv_input.flush()
         csv_input.close()
