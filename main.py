@@ -36,17 +36,19 @@ def getCSVFiles() :
 def getValueFromRow(row, header, columnWithVals, config) :
 
     for column in header :
-        valueColumn = config[column]["valueColumn"]
-        columnIndex = 0
 
-        if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 2 :
-            columnIndex = 1
-        else :
-            columnIndex = int(valueColumn) - 1
+        if column.strip() in row :
+            valueColumn = config[column]["valueColumn"]
+            columnIndex = 0
 
-        if row[0].strip() == column.strip() and len(row[columnIndex].strip()) != 0 :
-            columnWithVals[column.strip()] = row[columnIndex].strip()
-            return row[columnIndex].strip()
+            if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 2 :
+                columnIndex = 0
+            else :
+                columnIndex = int(valueColumn) - 1
+
+            if len(row[columnIndex].strip()) != 0 :
+                columnWithVals[column.strip()] = row[columnIndex].strip()
+                return row[columnIndex].strip()
 
     return None
 
