@@ -39,9 +39,8 @@ def getValueFromRow(row, header, columnWithVals, config) :
 
         if column.strip() in row :
             valueColumn = config[column]["valueColumn"]
-            columnIndex = 0
 
-            if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 2 :
+            if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 0 :
                 columnIndex = 0
             else :
                 columnIndex = int(valueColumn) - 1
@@ -69,7 +68,7 @@ def dealCSVFile(inputFile, output, outputHeader, config) :
             # get values in dict
             getValueFromRow(row, outputHeader, columnWithVals, config)
 
-    # order all vaule by outputHeader order
+    # order all value by outputHeader order
     for column in outputHeader :
         outputRow.append(columnWithVals[column])
 
