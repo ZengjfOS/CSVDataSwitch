@@ -40,7 +40,7 @@ def getValueFromRow(row, header, columnWithVals, config) :
         if column.strip() in row :
             valueColumn = config[column]["valueColumn"]
 
-            if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 0 :
+            if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 1 :
                 columnIndex = 0
             else :
                 columnIndex = int(valueColumn) - 1
