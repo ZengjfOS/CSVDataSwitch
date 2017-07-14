@@ -23,14 +23,18 @@
 * 修改[config.ini](config.ini)文件内容以满足对获取列的内容，配置文件标准请参考：[Configuration file parser](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure)
   * 只需要写**section**部分，其他部分不需要，请参考当前的[config.ini](config.ini)进行修改；
   * 目前支持csv文件任意列值与config.ini的section中的值进行匹配，**不可重复**；
-  * 目前仅支持`valueColumn`属性，表示**section**对应的**value**在哪一列，默认值是1(列号从1开始算)，且要大于等于1：
+    * 支持`valueColumn`属性，表示**section**对应的**value**在哪一列，默认值是1(列号从1开始算)，且要大于等于1；
+    * 支持`direction`属性，`"right"`表示`value`在`key`的右侧，`"down"`表示`value`在`key`的下方；
     ```
-    [Serial Number]
-    valueColumn = 2
-    [Dark Bad Pixels]
-    valueColumn = 2
-    [Dark Long Bad Pixels]
-    valueColumn = 2
+        [Serial Number]
+        direction = right
+        valueColumn = 2
+        [Dark Bad Pixels]
+        direction = down
+        valueColumn = 2
+        [Dark Long Bad Pixels]
+        direction = right
+        valueColumn = 2
     ```
 * 输出文件名：[output.csv](output.csv)；
 
