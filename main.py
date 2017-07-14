@@ -26,9 +26,21 @@ def getCSVFiles() :
     for (dirpath, dirnames, filenames) in walk("input") :
         f.extend(filenames)
 
-    print(f)
+    for file in f:
+        print(file)
 
     return f
+
+'''
+检查当前行里是否有需要的列值
+'''
+def checkColumnInRow(row, header) :
+
+    for column in header :
+        if column.strip() in row :
+            return column.strip()
+
+    return None
 
 '''
 检查当前行里是否有需要的列值
@@ -37,7 +49,8 @@ def getValueFromRow(row, header, columnWithVals, config) :
 
     for column in header :
 
-        if column.strip() in row :
+        # value at current line or next line
+        if (column.strip() in row) or (len(header) == 1):
             valueColumn = config[column]["valueColumn"]
 
             if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 1 :
@@ -58,15 +71,36 @@ def dealCSVFile(inputFile, output, outputHeader, config) :
 
     outputRow = []
     columnWithVals = {}
+    direction = "right"
+    column = ""
 
     # remove header before deal data
     inputHeader = next(inputFile)
 
     for row in inputFile :
-        if (len(row) >= 2) :
 
-            # get values in dict
-            getValueFromRow(row, outputHeader, columnWithVals, config)
+        # deal with value in next line
+        if direction != None and direction == "down" :
+            if column != None:
+                getValueFromRow(row, [column], columnWithVals, config)
+
+            column = None
+            direction = None
+            # continue
+
+        # detect value in which line
+        column = checkColumnInRow(row, outputHeader)
+        if column != None:
+            # if value just in current line, get value from row
+            if config[column]["direction"] == "right" :
+                if (len(row) >= 2) :
+                    # get values in dict
+                    getValueFromRow(row, outputHeader, columnWithVals, config)
+
+            # if value in next line, continue to next line and deal with next line
+            if config[column]["direction"] == "down" :
+                direction = "down"
+                continue
 
     # order all value by outputHeader order
     for column in outputHeader :
