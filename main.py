@@ -7,6 +7,7 @@ Description：
     3. 将读取去的相关内容写入ouput.csv文件中；
     4. output.csv文件中，每一行代表对应Serial Number、Dark Bad Pixels、Dark Long Bad Pixels对应的值。
     5. Serial Number、Dark Bad Pixels、Dark Long Bad Pixels字段放在config.ini文件内部，output输出行的顺序也是依照这个顺序
+    6. config.ini添加direction字段，用于判断key对应的value值是在右侧还是下方；
 
 Author：曾剑锋
 Date：2017-05-17
@@ -49,7 +50,7 @@ def getValueFromRow(row, header, columnWithVals, config) :
 
     for column in header :
 
-        # value at current line or next line
+        # value at current line or vaule at next line of key line
         if (column.strip() in row) or (len(header) == 1):
             valueColumn = config[column]["valueColumn"]
 
@@ -86,7 +87,6 @@ def dealCSVFile(inputFile, output, outputHeader, config) :
 
             column = None
             direction = None
-            # continue
 
         # detect value in which line
         column = checkColumnInRow(row, outputHeader)
