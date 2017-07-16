@@ -1,3 +1,3 @@
-Serial Number,Dark Bad Pixels,Dark Long Bad Pixels
-0xFFFF03367180,0,0
-0xFFFF03362B99,247,247
+Sensor Serial Number,number_static_bad_pixels,number_dynamic_bad_pixels
+16AFFFBB18AA,30,2234
+16B00A4118AA,38,2579

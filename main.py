@@ -35,13 +35,27 @@ def getCSVFiles() :
 '''
 检查当前行里是否有需要的列值
 '''
-def checkColumnInRow(row, header) :
+def checkColumnInRow(row, header, config) :
+
+    columns = []
+    columnsRight = []       # for current line
+    columnsDown = []        # for next line
 
     for column in header :
         if column.strip() in row :
-            return column.strip()
+            if config[column]["direction"] == "down" :
+                columnsDown.append(column.strip())
 
-    return None
+            if config[column]["direction"] == "right" :
+                columnsRight.append(column.strip())
+
+    if len(columnsRight) == 0 and len(columnsDown) == 0 :
+        return None
+
+    columns.append(columnsRight)
+    columns.append(columnsDown)
+
+    return columns
 
 '''
 检查当前行里是否有需要的列值
@@ -51,17 +65,15 @@ def getValueFromRow(row, header, columnWithVals, config) :
     for column in header :
 
         # value at current line or vaule at next line of key line
-        if (column.strip() in row) or (len(header) == 1):
-            valueColumn = config[column]["valueColumn"]
+        valueColumn = config[column]["valueColumn"]
 
-            if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 1 :
-                columnIndex = 0
-            else :
-                columnIndex = int(valueColumn) - 1
+        if valueColumn == None or len(valueColumn) == 0 or int(valueColumn) < 1 :
+            columnIndex = 0
+        else :
+            columnIndex = int(valueColumn) - 1
 
-            if len(row[columnIndex].strip()) != 0 :
-                columnWithVals[column.strip()] = row[columnIndex].strip()
-                return row[columnIndex].strip()
+        if len(row[columnIndex].strip()) != 0 :
+            columnWithVals[column.strip()] = row[columnIndex].strip()
 
     return None
 
@@ -73,7 +85,7 @@ def dealCSVFile(inputFile, output, outputHeader, config) :
     outputRow = []
     columnWithVals = {}
     direction = "right"
-    column = ""
+    columns = []
 
     # remove header before deal data
     inputHeader = next(inputFile)
@@ -81,24 +93,20 @@ def dealCSVFile(inputFile, output, outputHeader, config) :
     for row in inputFile :
 
         # deal with value in next line
-        if direction != None and direction == "down" :
-            if column != None:
-                getValueFromRow(row, [column], columnWithVals, config)
+        if (direction == "down") and (columns != None) and (len(columns[1]) != 0) :
+            getValueFromRow(row, columns[1], columnWithVals, config)
 
-            column = None
+            columns = None
             direction = None
 
-        # detect value in which line
-        column = checkColumnInRow(row, outputHeader)
-        if column != None:
-            # if value just in current line, get value from row
-            if config[column]["direction"] == "right" :
-                if (len(row) >= 2) :
-                    # get values in dict
-                    getValueFromRow(row, outputHeader, columnWithVals, config)
+        # detect valid column in current row
+        columns = checkColumnInRow(row, outputHeader, config)
+        if columns != None:
+            # get values from current row
+            getValueFromRow(row, columns[0], columnWithVals, config)
 
             # if value in next line, continue to next line and deal with next line
-            if config[column]["direction"] == "down" :
+            if len(columns[1]) > 0 :
                 direction = "down"
                 continue
 
