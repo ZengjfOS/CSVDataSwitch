@@ -93,7 +93,7 @@ def dealCSVFile(inputFile, output, outputHeader, config) :
     for row in inputFile :
 
         # deal with value in next line
-        if (direction == "down") and (columns != None) and (len(columns[1]) != 0) :
+        if (direction == "down") and (columns != None) and (len(columns[1]) > 0) :
             getValueFromRow(row, columns[1], columnWithVals, config)
 
             columns = None
@@ -103,7 +103,8 @@ def dealCSVFile(inputFile, output, outputHeader, config) :
         columns = checkColumnInRow(row, outputHeader, config)
         if columns != None:
             # get values from current row
-            getValueFromRow(row, columns[0], columnWithVals, config)
+            if len(columns[0]) > 0 :
+                getValueFromRow(row, columns[0], columnWithVals, config)
 
             # if value in next line, continue to next line and deal with next line
             if len(columns[1]) > 0 :
